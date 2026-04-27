@@ -3,6 +3,16 @@ class Producto {
     private $conn;
     private $table = "Productos";
 
+
+    public function getById($id) {
+    $sql = "SELECT * FROM Productos WHERE IdProducto = :id LIMIT 1";
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(":id", $id);
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
     public function __construct($db) {
         $this->conn = $db;
     }

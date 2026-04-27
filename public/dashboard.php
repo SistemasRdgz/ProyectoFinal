@@ -1,4 +1,34 @@
 <?php require_once "../helpers/auth.php"; ?>
+<?php
+require_once "../config/database.php";
+
+$db = (new Database())->connect();
+
+/* ===================== */
+/* PRODUCTOS */
+/* ===================== */
+$sql = "SELECT COUNT(*) as total FROM Productos";
+$totalProductos = $db->query($sql)->fetch()['total'];
+
+/* ===================== */
+/* USUARIOS */
+/* ===================== */
+$sql = "SELECT COUNT(*) as total FROM Usuarios";
+$totalUsuarios = $db->query($sql)->fetch()['total'];
+
+/* ===================== */
+/* STOCK BAJO */
+/* ===================== */
+$sql = "SELECT COUNT(*) as total FROM Productos WHERE StockActual <= 5";
+$stockBajo = $db->query($sql)->fetch()['total'];
+
+/* ===================== */
+/* VENTAS (según detalle compra) */
+/* ===================== */
+$sql = "SELECT SUM(Cantidad * Precio) as total FROM DetalleCompras";
+$ventas = $db->query($sql)->fetch()['total'];
+if($ventas == null) $ventas = 0;
+?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -9,7 +39,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
-<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
@@ -28,36 +58,44 @@
 
 <div class="content">
 
-    <h3 class="mb-4">
-        Bienvenido, <?php echo $_SESSION['user']['Nombre']; ?>
-    </h3>
+<h2 class="mb-4 fw-bold">📊 Dashboard</h2>
 
-    <div class="row">
+<div class="row">
 
-        <div class="col-md-4">
-            <div class="card-box blue shadow">
-                <h5>Productos Activos</h5>
-                <h2>120</h2>
-            </div>
+    <div class="col-md-3">
+        <div class="card-box blue text-center">
+            <h3>📦</h3>
+            <h5>Productos</h5>
+            <h3><?= $totalProductos ?></h3>
         </div>
+    </div>
 
-        <div class="col-md-4">
-            <div class="card-box red shadow">
-                <h5>Caducan &lt; 30 días</h5>
-                <h2>8</h2>
-            </div>
+    <div class="col-md-3">
+        <div class="card-box green text-center">
+            <h3>💰</h3>
+            <h5>Ventas</h5>
+            <h3>$<?= number_format($ventas, 2) ?></h3>
         </div>
+    </div>
 
-        <div class="col-md-4">
-            <div class="card-box green shadow">
-                <h5>Total Movimientos</h5>
-                <h2>56</h2>
-            </div>
+    <div class="col-md-3">
+        <div class="card-box red text-center">
+            <h3>👤</h3>
+            <h5>Usuarios</h5>
+            <h3><?= $totalUsuarios ?></h3>
         </div>
+    </div>
 
+    <div class="col-md-3">
+        <div class="card-box blue text-center">
+            <h3>⚠️</h3>
+            <h5>Stock Bajo</h5>
+            <h3><?= $stockBajo ?></h3>
+        </div>
     </div>
 
 </div>
 
+</div>
 </body>
 </html>

@@ -41,6 +41,9 @@
             <i class="bi bi-box-arrow-in-right"></i> Ingresar
         </button>
 
+        <a href="register.php" class="btn btn-outline-light w-100 mt-2">
+    Registrarse
+</a>
     </form>
 
 </div>

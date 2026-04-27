@@ -79,7 +79,12 @@ body.login-bg {
     padding: 20px;
     color: white;
 }
-
+.card-box:hover{
+    transform: translateY(-8px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
 .blue { background: linear-gradient(45deg, #2193b0, #6dd5ed); }
 .red { background: linear-gradient(45deg, #ff416c, #ff4b2b); }
 .green { background: linear-gradient(45deg, #56ab2f, #a8e063); }
+
+

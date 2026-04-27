@@ -1,7 +1,7 @@
 <?php
 class Database {
     private $host = "localhost";
-    private $db_name = "tu_basedatos";
+    private $db_name = "farmaciasj";
     private $username = "root";
     private $password = "";
 

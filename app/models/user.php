@@ -3,6 +3,18 @@ class User {
     private $conn;
     private $table = "Usuarios";
 
+public function login($correo) {
+    $query = "SELECT * FROM $this->table 
+              WHERE Correo = :correo 
+              LIMIT 1";
+
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(":correo", $correo);
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
     public function __construct($db) {
         $this->conn = $db;
     }
@@ -18,19 +30,20 @@ class User {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function crear($nombre, $correo, $pass, $rol) {
-        $sql = "INSERT INTO $this->table (Nombre, Correo, Pass, Rol, Estado)
-                VALUES (:n, :c, :p, :r, 1)";
-        $stmt = $this->conn->prepare($sql);
-        $hash = password_hash($pass, PASSWORD_BCRYPT);
+public function crear($nombre, $correo, $pass, $rol) {
+    $sql = "INSERT INTO $this->table (Nombre, Correo, Pass, Rol)
+            VALUES (:n, :c, :p, :r)";
+    
+    $stmt = $this->conn->prepare($sql);
+    $hash = password_hash($pass, PASSWORD_BCRYPT);
 
-        return $stmt->execute([
-            ":n"=>$nombre,
-            ":c"=>$correo,
-            ":p"=>$hash,
-            ":r"=>$rol
-        ]);
-    }
+    return $stmt->execute([
+        ":n"=>$nombre,
+        ":c"=>$correo,
+        ":p"=>$hash,
+        ":r"=>$rol
+    ]);
+}
 
     public function actualizar($id, $nombre, $correo, $rol) {
         $sql = "UPDATE $this->table 
