@@ -1,19 +1,101 @@
 <?php
+require_once "../helpers/auth.php";
 require_once "../config/database.php";
+require_once "../app/models/producto.php";
+
+requiereAdmin();
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    $_SESSION['error'] = "Acceso no permitido.";
+    header("Location: productos.php");
+    exit;
+}
+
+$id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
+$nombre = trim($_POST['nombre'] ?? '');
+$descripcion = trim($_POST['descripcion'] ?? '');
+$precio = $_POST['precio'] ?? '';
+$fechaVencimiento = trim($_POST['fecha_vencimiento'] ?? '');
+$stockActual = $_POST['stock_actual'] ?? '';
+$stockMinimo = $_POST['stock_minimo'] ?? '';
+$idCategoria = $_POST['id_categoria'] ?? null;
+$idProveedor = $_POST['id_proveedor'] ?? null;
+
+if (!$id) {
+    $_SESSION['error'] = "El producto seleccionado no es válido.";
+    header("Location: productos.php");
+    exit;
+}
+
+if ($nombre === '' || $precio === '' || $fechaVencimiento === '' || $stockActual === '' || $stockMinimo === '') {
+    $_SESSION['error'] = "Los campos nombre, precio, fecha de vencimiento, stock actual y stock mínimo son obligatorios.";
+    header("Location: editar_producto.php?id=" . urlencode($id));
+    exit;
+}
+
+if (!is_numeric($precio) || $precio <= 0) {
+    $_SESSION['error'] = "El precio debe ser un número mayor que cero.";
+    header("Location: editar_producto.php?id=" . urlencode($id));
+    exit;
+}
+
+if (!filter_var($stockActual, FILTER_VALIDATE_INT) && $stockActual !== "0") {
+    $_SESSION['error'] = "El stock actual debe ser un número entero.";
+    header("Location: editar_producto.php?id=" . urlencode($id));
+    exit;
+}
+
+if (!filter_var($stockMinimo, FILTER_VALIDATE_INT) && $stockMinimo !== "0") {
+    $_SESSION['error'] = "El stock mínimo debe ser un número entero.";
+    header("Location: editar_producto.php?id=" . urlencode($id));
+    exit;
+}
+
+if ((int)$stockActual < 0 || (int)$stockMinimo < 0) {
+    $_SESSION['error'] = "El stock actual y el stock mínimo no pueden ser negativos.";
+    header("Location: editar_producto.php?id=" . urlencode($id));
+    exit;
+}
+
+$fechaActual = date("Y-m-d");
+
+if ($fechaVencimiento < $fechaActual) {
+    $_SESSION['error'] = "La fecha de vencimiento no puede ser anterior a la fecha actual.";
+    header("Location: editar_producto.php?id=" . urlencode($id));
+    exit;
+}
+
+$idCategoria = $idCategoria !== '' ? $idCategoria : null;
+$idProveedor = $idProveedor !== '' ? $idProveedor : null;
 
 $db = (new Database())->connect();
+$model = new Producto($db);
 
-$id = $_POST['id'];
-$nombre = $_POST['nombre'];
-$precio = $_POST['precio'];
-$stock = $_POST['stock'];
+$producto = $model->getById($id);
 
-$sql = "UPDATE productos 
-        SET Nombre = ?, Precio = ?, StockActual = ? 
-        WHERE IdProducto = ?";
+if (!$producto) {
+    $_SESSION['error'] = "El producto que intenta actualizar no existe.";
+    header("Location: productos.php");
+    exit;
+}
 
-$stmt = $db->prepare($sql);
-$stmt->execute([$nombre, $precio, $stock, $id]);
+$resultado = $model->actualizar(
+    $id,
+    $nombre,
+    $descripcion,
+    $precio,
+    $fechaVencimiento,
+    (int)$stockActual,
+    (int)$stockMinimo,
+    $idCategoria,
+    $idProveedor
+);
+
+if ($resultado) {
+    $_SESSION['success'] = "Producto actualizado correctamente.";
+} else {
+    $_SESSION['error'] = "No se pudo actualizar el producto.";
+}
 
 header("Location: productos.php");
 exit;

@@ -11,12 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+$id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
 $nombre = trim($_POST['nombre'] ?? '');
 $correo = trim($_POST['correo'] ?? '');
-$password = trim($_POST['password'] ?? '');
 $rol = trim($_POST['rol'] ?? '');
 
-if ($nombre === '' || $correo === '' || $password === '' || $rol === '') {
+if (!$id || $nombre === '' || $correo === '' || $rol === '') {
     $_SESSION['error'] = "Todos los campos son obligatorios.";
     header("Location: usuarios.php");
     exit;
@@ -24,13 +24,7 @@ if ($nombre === '' || $correo === '' || $password === '' || $rol === '') {
 
 if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
     $_SESSION['error'] = "El correo electrónico no tiene un formato válido.";
-    header("Location: usuarios.php");
-    exit;
-}
-
-if (strlen($password) < 6) {
-    $_SESSION['error'] = "La contraseña debe tener al menos 6 caracteres.";
-    header("Location: usuarios.php");
+    header("Location: edit_user.php?id=" . urlencode($id));
     exit;
 }
 
@@ -38,25 +32,40 @@ $rolesPermitidos = ['admin', 'usuario'];
 
 if (!in_array($rol, $rolesPermitidos)) {
     $_SESSION['error'] = "El rol seleccionado no es válido.";
-    header("Location: usuarios.php");
+    header("Location: edit_user.php?id=" . urlencode($id));
     exit;
 }
 
 $db = (new Database())->connect();
 $model = new User($db);
 
-if ($model->correoExiste($correo)) {
-    $_SESSION['error'] = "Ya existe un usuario registrado con ese correo.";
+$usuario = $model->getById($id);
+
+if (!$usuario) {
+    $_SESSION['error'] = "El usuario que intenta actualizar no existe.";
     header("Location: usuarios.php");
     exit;
 }
 
-$resultado = $model->crear($nombre, $correo, $password, $rol);
+if ($model->correoExiste($correo, $id)) {
+    $_SESSION['error'] = "Ya existe otro usuario registrado con ese correo.";
+    header("Location: edit_user.php?id=" . urlencode($id));
+    exit;
+}
+
+$resultado = $model->actualizar($id, $nombre, $correo, $rol);
 
 if ($resultado) {
-    $_SESSION['success'] = "Usuario creado correctamente.";
+    $_SESSION['success'] = "Usuario actualizado correctamente.";
+
+    if (isset($_SESSION['user']['IdUsuario']) && $_SESSION['user']['IdUsuario'] == $id) {
+        $_SESSION['user']['Nombre'] = $nombre;
+        $_SESSION['user']['Correo'] = $correo;
+        $_SESSION['user']['Rol'] = $rol;
+    }
+
 } else {
-    $_SESSION['error'] = "No se pudo crear el usuario. Intente nuevamente.";
+    $_SESSION['error'] = "No se pudo actualizar el usuario.";
 }
 
 header("Location: usuarios.php");

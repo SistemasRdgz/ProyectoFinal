@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -21,11 +24,14 @@
     <div class="title">Farmacia San José</div>
     <div class="subtitle">Control de Inventario</div>
 
-    <?php if(isset($_GET['error'])): ?>
-        <div class="alert alert-danger">Credenciales incorrectas</div>
-    <?php endif; ?>
+    <?php if(isset($_SESSION['error'])): ?>
+    <div class="alert alert-danger">
+        <?= $_SESSION['error']; ?>
+    </div>
+    <?php unset($_SESSION['error']); ?>
+<?php endif; ?>
 
-    <form action="../app/controllers/AuthController.php" method="POST">
+   <form action="../app/controllers/authcontroller.php" method="POST">
 
         <div class="mb-3 text-start">
             <label>Correo</label>
@@ -41,9 +47,11 @@
             <i class="bi bi-box-arrow-in-right"></i> Ingresar
         </button>
 
-        <a href="register.php" class="btn btn-outline-light w-100 mt-2">
+<!--
+<a href="register.php" class="btn btn-outline-light w-100 mt-2">
     Registrarse
 </a>
+-->
     </form>
 
 </div>

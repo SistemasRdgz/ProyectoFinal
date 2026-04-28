@@ -1,56 +1,112 @@
 <?php
+
 class Producto {
     private $conn;
     private $table = "Productos";
 
-
-    public function getById($id) {
-    $sql = "SELECT * FROM Productos WHERE IdProducto = :id LIMIT 1";
-    
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bindParam(":id", $id);
-    $stmt->execute();
-
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
     public function __construct($db) {
         $this->conn = $db;
     }
 
     public function getAll() {
-        $stmt = $this->conn->query("SELECT * FROM $this->table");
+        $sql = "SELECT 
+                    p.*,
+                    c.Nombre AS Categoria,
+                    pr.Nombre AS Proveedor
+                FROM {$this->table} p
+                LEFT JOIN Categorias c ON p.IdCategoria = c.IdCategoria
+                LEFT JOIN Proveedores pr ON p.IdProveedor = pr.IdProveedor
+                ORDER BY p.IdProducto DESC";
+
+        $stmt = $this->conn->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function crear($nombre, $precio, $stock) {
-        $query = "INSERT INTO $this->table (Nombre, Precio, StockActual)
-                  VALUES (:nombre, :precio, :stock)";
-        $stmt = $this->conn->prepare($query);
+    public function getById($id) {
+        $sql = "SELECT * FROM {$this->table} 
+                WHERE IdProducto = :id 
+                LIMIT 1";
 
-        $stmt->bindParam(":nombre", $nombre);
-        $stmt->bindParam(":precio", $precio);
-        $stmt->bindParam(":stock", $stock);
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([":id" => $id]);
 
-        return $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function actualizar($id, $nombre, $precio) {
-        $query = "UPDATE $this->table 
-                  SET Nombre=:nombre, Precio=:precio 
-                  WHERE IdProducto=:id";
+    public function crear($nombre, $descripcion, $precio, $fechaVencimiento, $stockActual, $stockMinimo, $idCategoria, $idProveedor) {
+        $sql = "INSERT INTO {$this->table} 
+                (Nombre, Descripcion, Precio, FechaVencimiento, StockActual, StockMinimo, IdCategoria, IdProveedor)
+                VALUES 
+                (:nombre, :descripcion, :precio, :fecha_vencimiento, :stock_actual, :stock_minimo, :id_categoria, :id_proveedor)";
 
-        $stmt = $this->conn->prepare($query);
+        $stmt = $this->conn->prepare($sql);
 
-        $stmt->bindParam(":id", $id);
-        $stmt->bindParam(":nombre", $nombre);
-        $stmt->bindParam(":precio", $precio);
+        return $stmt->execute([
+            ":nombre" => $nombre,
+            ":descripcion" => $descripcion,
+            ":precio" => $precio,
+            ":fecha_vencimiento" => $fechaVencimiento,
+            ":stock_actual" => $stockActual,
+            ":stock_minimo" => $stockMinimo,
+            ":id_categoria" => $idCategoria ?: null,
+            ":id_proveedor" => $idProveedor ?: null
+        ]);
+    }
 
-        return $stmt->execute();
+    public function actualizar($id, $nombre, $descripcion, $precio, $fechaVencimiento, $stockActual, $stockMinimo, $idCategoria, $idProveedor) {
+        $sql = "UPDATE {$this->table}
+                SET 
+                    Nombre = :nombre,
+                    Descripcion = :descripcion,
+                    Precio = :precio,
+                    FechaVencimiento = :fecha_vencimiento,
+                    StockActual = :stock_actual,
+                    StockMinimo = :stock_minimo,
+                    IdCategoria = :id_categoria,
+                    IdProveedor = :id_proveedor
+                WHERE IdProducto = :id";
+
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([
+            ":id" => $id,
+            ":nombre" => $nombre,
+            ":descripcion" => $descripcion,
+            ":precio" => $precio,
+            ":fecha_vencimiento" => $fechaVencimiento,
+            ":stock_actual" => $stockActual,
+            ":stock_minimo" => $stockMinimo,
+            ":id_categoria" => $idCategoria ?: null,
+            ":id_proveedor" => $idProveedor ?: null
+        ]);
     }
 
     public function eliminar($id) {
-        $stmt = $this->conn->prepare("DELETE FROM $this->table WHERE IdProducto=:id");
-        $stmt->bindParam(":id", $id);
-        return $stmt->execute();
+        $sql = "DELETE FROM {$this->table} 
+                WHERE IdProducto = :id";
+
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([":id" => $id]);
+    }
+
+    public function productosStockBajo() {
+        $sql = "SELECT * FROM {$this->table}
+                WHERE StockActual <= StockMinimo
+                ORDER BY StockActual ASC";
+
+        $stmt = $this->conn->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function productosPorVencer($dias = 30) {
+        $sql = "SELECT * FROM {$this->table}
+                WHERE FechaVencimiento BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL :dias DAY)
+                ORDER BY FechaVencimiento ASC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":dias", (int)$dias, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

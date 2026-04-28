@@ -1,82 +1,148 @@
 <?php
-session_start();
+require_once "../helpers/auth.php";
 require_once "../config/database.php";
-require_once "../app/models/Producto.php";
+require_once "../app/models/producto.php";
 
 $db = (new Database())->connect();
 $model = new Producto($db);
 
-/* ===================== */
-/* CARRO REAL (SOLO IDS) */
-/* ===================== */
 $carrito = $_SESSION['carrito'] ?? [];
+$total = 0;
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+<meta charset="UTF-8">
 <title>Carrito</title>
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
 </head>
 
-<body class="container mt-4">
+<body>
 
-<h2>🛒 Mi Carrito</h2>
+<div class="sidebar">
+    <h4>Farmacia SJ</h4>
 
-<?php if(empty($carrito)): ?>
+    <a href="dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="productos.php"><i class="bi bi-capsule"></i> Productos</a>
+    <a href="carrito.php"><i class="bi bi-cart4"></i> Compras</a>
+    <a href="movimientos.php"><i class="bi bi-arrow-left-right"></i> Movimientos</a>
 
-    <div class="alert alert-warning">
-        No hay productos en el carrito
+    <?php if (esAdmin()): ?>
+        <a href="usuarios.php"><i class="bi bi-people"></i> Usuarios</a>
+    <?php endif; ?>
+
+    <div style="position:absolute; bottom:20px; width:100%;">
+        <a href="logout.php"><i class="bi bi-box-arrow-left"></i> Cerrar sesión</a>
+    </div>
+</div>
+
+<div class="content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">🛒 Carrito de Compra</h2>
+
+        <a href="productos.php" class="btn btn-primary">
+            <i class="bi bi-arrow-left"></i> Volver a productos
+        </a>
     </div>
 
-<?php else: ?>
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger">
+            <?= $_SESSION['error']; ?>
+        </div>
+        <?php unset($_SESSION['error']); ?>
+    <?php endif; ?>
 
-<table class="table table-bordered">
+    <?php if (isset($_SESSION['success'])): ?>
+        <div class="alert alert-success">
+            <?= $_SESSION['success']; ?>
+        </div>
+        <?php unset($_SESSION['success']); ?>
+    <?php endif; ?>
 
-    <thead>
-        <tr>
-            <th>Producto</th>
-            <th>Precio</th>
-        </tr>
-    </thead>
+    <?php if (empty($carrito)): ?>
 
-    <tbody>
+        <div class="alert alert-warning">
+            No hay productos en el carrito.
+        </div>
 
-    <?php 
-    $total = 0;
+    <?php else: ?>
 
-    foreach($carrito as $id):
+        <div class="card shadow">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover mb-0">
 
-        $p = $model->getById($id);
-        $total += $p['Precio'];
-    ?>
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio unitario</th>
+                            <th>Cantidad</th>
+                            <th>Stock disponible</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
 
-        <tr>
-            <td><?= $p['Nombre'] ?></td>
-            <td>$<?= $p['Precio'] ?></td>
-        </tr>
+                    <tbody>
 
-    <?php endforeach; ?>
+                    <?php foreach ($carrito as $item): ?>
+                        <?php
+                        $idProducto = $item['id'] ?? null;
+                        $cantidad = (int)($item['cantidad'] ?? 1);
 
-    </tbody>
+                        $producto = $model->getById($idProducto);
 
-</table>
+                        if (!$producto) {
+                            continue;
+                        }
 
-<h4>Total: $<?= $total ?></h4>
+                        $precio = (float)$producto['Precio'];
+                        $subtotal = $precio * $cantidad;
+                        $total += $subtotal;
+                        ?>
 
-<a href="vaciar_carrito.php" class="btn btn-danger">
-    Vaciar carrito
-</a>
+                        <tr>
+                            <td><?= htmlspecialchars($producto['Nombre']) ?></td>
+                            <td>$<?= number_format($precio, 2) ?></td>
+                            <td><?= htmlspecialchars($cantidad) ?></td>
+                            <td>
+                                <span class="badge bg-info text-dark">
+                                    <?= htmlspecialchars($producto['StockActual']) ?>
+                                </span>
+                            </td>
+                            <td>$<?= number_format($subtotal, 2) ?></td>
+                        </tr>
 
-<form action="checkout.php" method="POST">
-    <button class="btn btn-success w-100 mt-3">
-        💳 Pagar / Confirmar compra
-    </button>
-</form>
+                    <?php endforeach; ?>
 
-<?php endif; ?>
+                    </tbody>
 
-<a href="productos.php" class="btn btn-primary mt-3">← Volver</a>
+                </table>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <h4>Total: $<?= number_format($total, 2) ?></h4>
+
+            <div>
+                <a href="vaciar_carrito.php" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Vaciar carrito
+                </a>
+
+                <form action="checkout.php" method="POST" style="display:inline;">
+                    <button class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Confirmar compra
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    <?php endif; ?>
+
+</div>
 
 </body>
 </html>

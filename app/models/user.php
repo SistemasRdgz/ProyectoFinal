@@ -6,6 +6,7 @@ class User {
 public function login($correo) {
     $query = "SELECT * FROM $this->table 
               WHERE Correo = :correo 
+              AND Estado = 1
               LIMIT 1";
 
     $stmt = $this->conn->prepare($query);
@@ -68,4 +69,29 @@ public function crear($nombre, $correo, $pass, $rol) {
         $stmt = $this->conn->prepare("UPDATE $this->table SET Estado=:e WHERE IdUsuario=:id");
         return $stmt->execute([":e"=>$estado, ":id"=>$id]);
     }
+
+    public function correoExiste($correo, $idExcluir = null) {
+    if ($idExcluir) {
+        $sql = "SELECT IdUsuario FROM $this->table 
+                WHERE Correo = :correo AND IdUsuario != :id 
+                LIMIT 1";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            ":correo" => $correo,
+            ":id" => $idExcluir
+        ]);
+    } else {
+        $sql = "SELECT IdUsuario FROM $this->table 
+                WHERE Correo = :correo 
+                LIMIT 1";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            ":correo" => $correo
+        ]);
+    }
+
+    return $stmt->fetch(PDO::FETCH_ASSOC) ? true : false;
+}
 }
