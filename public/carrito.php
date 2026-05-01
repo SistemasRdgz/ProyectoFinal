@@ -80,9 +80,10 @@ $total = 0;
                         <tr>
                             <th>Producto</th>
                             <th>Precio unitario</th>
-                            <th>Cantidad</th>
+                            <th class="text-center">Cantidad</th>
                             <th>Stock disponible</th>
                             <th>Subtotal</th>
+                            <th class="text-center">Acciones</th> <!-- NUEVA COLUMNA -->
                         </tr>
                     </thead>
 
@@ -105,15 +106,31 @@ $total = 0;
                         ?>
 
                         <tr>
-                            <td><?= htmlspecialchars($producto['Nombre']) ?></td>
-                            <td>$<?= number_format($precio, 2) ?></td>
-                            <td><?= htmlspecialchars($cantidad) ?></td>
-                            <td>
+                            <td class="align-middle"><?= htmlspecialchars($producto['Nombre']) ?></td>
+                            <td class="align-middle">$<?= number_format($precio, 2) ?></td>
+                            
+                            <!-- CELDA DE CANTIDAD MODIFICADA CON BOTONES -->
+                            <td class="align-middle">
+                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                    <a href="update_cart.php?action=sub&id=<?= $idProducto ?>" class="btn btn-sm btn-outline-danger px-2 py-0 fw-bold">-</a>
+                                    <span class="fw-bold fs-6"><?= htmlspecialchars($cantidad) ?></span>
+                                    <a href="update_cart.php?action=add&id=<?= $idProducto ?>" class="btn btn-sm btn-outline-success px-2 py-0 fw-bold">+</a>
+                                </div>
+                            </td>
+                            
+                            <td class="align-middle">
                                 <span class="badge bg-info text-dark">
                                     <?= htmlspecialchars($producto['StockActual']) ?>
                                 </span>
                             </td>
-                            <td>$<?= number_format($subtotal, 2) ?></td>
+                            <td class="align-middle">$<?= number_format($subtotal, 2) ?></td>
+                            
+                            <!-- NUEVA CELDA DE BOTÓN ELIMINAR --> ...
+                            <td class="align-middle text-center">
+                                <a href="update_cart.php?action=remove&id=<?= $idProducto ?>" class="btn btn-sm btn-danger" title="Eliminar producto">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
                         </tr>
 
                     <?php endforeach; ?>
@@ -145,4 +162,4 @@ $total = 0;
 </div>
 
 </body>
-</html>
+</html> 
