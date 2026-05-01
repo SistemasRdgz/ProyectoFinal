@@ -11,7 +11,7 @@ class Compra {
             $this->conn->beginTransaction();
 
             // Insertar compra
-            $query = "INSERT INTO Compras (IdProveedor, Fecha, Total)
+            $query = "INSERT INTO compras (IdProveedor, Fecha, Total)
                       VALUES (:proveedor, NOW(), :total)";
             $stmt = $this->conn->prepare($query);
 
@@ -24,7 +24,7 @@ class Compra {
 
             // Insertar detalle
             foreach ($detalles as $d) {
-                $query = "INSERT INTO DetalleCompras (IdCompra, IdProducto, Cantidad, Precio)
+                $query = "INSERT INTO detallecompras (IdCompra, IdProducto, Cantidad, Precio)
                           VALUES (:compra, :producto, :cantidad, :precio)";
                 $stmt = $this->conn->prepare($query);
 

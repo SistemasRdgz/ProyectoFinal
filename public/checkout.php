@@ -45,7 +45,7 @@ try {
         }
 
         $sql = "SELECT IdProducto, Nombre, Precio, StockActual, IdProveedor 
-                FROM Productos 
+                FROM productos 
                 WHERE IdProducto = ? 
                 LIMIT 1";
 
@@ -85,7 +85,7 @@ try {
     /* ===================== */
     /* 2. CREAR COMPRA / TRANSACCIÓN */
     /* ===================== */
-    $sql = "INSERT INTO Compras (IdProveedor, Fecha, Total)
+    $sql = "INSERT INTO compras (IdProveedor, Fecha, Total)
             VALUES (?, NOW(), ?)";
 
     $stmt = $db->prepare($sql);
@@ -98,7 +98,7 @@ try {
     /* ===================== */
     foreach ($productosValidados as $item) {
 
-        $sql = "INSERT INTO DetalleCompras
+        $sql = "INSERT INTO detallecompras
                 (IdCompra, IdProducto, Cantidad, Precio)
                 VALUES (?, ?, ?, ?)";
 
@@ -110,7 +110,7 @@ try {
             $item['precio']
         ]);
 
-        $sql = "UPDATE Productos
+        $sql = "UPDATE productos
                 SET StockActual = StockActual - ?
                 WHERE IdProducto = ?";
 
@@ -120,7 +120,7 @@ try {
             $item['idProducto']
         ]);
 
-        $sql = "INSERT INTO MovimientosInventario
+        $sql = "INSERT INTO movimientosinventario
                 (IdProducto, IdUsuario, TipoMovimiento, Cantidad, Fecha)
                 VALUES (?, ?, ?, ?, NOW())";
 

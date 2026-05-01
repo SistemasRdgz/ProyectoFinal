@@ -9,7 +9,7 @@ $model = new Movimiento($db);
 $usuario = usuarioActual();
 $esAdmin = esAdmin();
 
-$productos = $db->query("SELECT IdProducto, Nombre, StockActual FROM Productos ORDER BY Nombre ASC")->fetchAll(PDO::FETCH_ASSOC);
+$productos = $db->query("SELECT IdProducto, Nombre, StockActual FROM productos ORDER BY Nombre ASC")->fetchAll(PDO::FETCH_ASSOC);
 $movimientos = $model->getAll();
 ?>
 

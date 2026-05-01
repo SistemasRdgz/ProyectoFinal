@@ -10,20 +10,20 @@ $esAdmin = esAdmin();
 /* ===================== */
 /* PRODUCTOS */
 /* ===================== */
-$sql = "SELECT COUNT(*) as total FROM Productos";
+$sql = "SELECT COUNT(*) as total FROM productos";
 $totalProductos = $db->query($sql)->fetch()['total'] ?? 0;
 
 /* ===================== */
 /* USUARIOS */
 /* ===================== */
-$sql = "SELECT COUNT(*) as total FROM Usuarios";
+$sql = "SELECT COUNT(*) as total FROM usuarios";
 $totalUsuarios = $db->query($sql)->fetch()['total'] ?? 0;
 
 /* ===================== */
 /* STOCK BAJO */
 /* ===================== */
 $sql = "SELECT COUNT(*) as total 
-        FROM Productos 
+        FROM productos   
         WHERE StockActual <= StockMinimo";
 $stockBajo = $db->query($sql)->fetch()['total'] ?? 0;
 
@@ -31,14 +31,14 @@ $stockBajo = $db->query($sql)->fetch()['total'] ?? 0;
 /* PRODUCTOS POR VENCER */
 /* ===================== */
 $sql = "SELECT COUNT(*) as total
-        FROM Productos
+        FROM productos
         WHERE FechaVencimiento BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)";
 $porVencer = $db->query($sql)->fetch()['total'] ?? 0;
 
 /* ===================== */
 /* MONTO REGISTRADO EN COMPRAS */
 /* ===================== */
-$sql = "SELECT SUM(Cantidad * Precio) as total FROM DetalleCompras";
+$sql = "SELECT SUM(Cantidad * Precio) as total FROM detallecompras";
 $montoCompras = $db->query($sql)->fetch()['total'];
 
 if ($montoCompras == null) {

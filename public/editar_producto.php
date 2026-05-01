@@ -30,8 +30,8 @@ if (!$producto) {
     exit;
 }
 
-$categorias = $db->query("SELECT IdCategoria, Nombre FROM Categorias ORDER BY Nombre ASC")->fetchAll(PDO::FETCH_ASSOC);
-$proveedores = $db->query("SELECT IdProveedor, Nombre FROM Proveedores ORDER BY Nombre ASC")->fetchAll(PDO::FETCH_ASSOC);
+$categorias = $db->query("SELECT IdCategoria, Nombre FROM categorias ORDER BY Nombre ASC")->fetchAll(PDO::FETCH_ASSOC);
+$proveedores = $db->query("SELECT IdProveedor, Nombre FROM proveedores ORDER BY Nombre ASC")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>

@@ -1,7 +1,7 @@
 <?php
 class User {
     private $conn;
-    private $table = "Usuarios";
+    private $table = "usuarios";
 
 public function login($correo) {
     $query = "SELECT * FROM $this->table 

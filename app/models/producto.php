@@ -2,7 +2,7 @@
 
 class Producto {
     private $conn;
-    private $table = "Productos";
+    private $table = "productos";
 
     public function __construct($db) {
         $this->conn = $db;
@@ -14,8 +14,8 @@ class Producto {
                     c.Nombre AS Categoria,
                     pr.Nombre AS Proveedor
                 FROM {$this->table} p
-                LEFT JOIN Categorias c ON p.IdCategoria = c.IdCategoria
-                LEFT JOIN Proveedores pr ON p.IdProveedor = pr.IdProveedor
+                LEFT JOIN categorias c ON p.IdCategoria = c.IdCategoria
+                LEFT JOIN proveedores pr ON p.IdProveedor = pr.IdProveedor
                 ORDER BY p.IdProducto DESC";
 
         $stmt = $this->conn->query($sql);

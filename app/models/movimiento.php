@@ -2,7 +2,7 @@
 
 class Movimiento {
     private $conn;
-    private $table = "MovimientosInventario";
+    private $table = "movimientosinventario";
 
     public function __construct($db) {
         $this->conn = $db;
@@ -19,8 +19,8 @@ class Movimiento {
                     m.Cantidad,
                     m.Fecha
                 FROM {$this->table} m
-                INNER JOIN Productos p ON m.IdProducto = p.IdProducto
-                INNER JOIN Usuarios u ON m.IdUsuario = u.IdUsuario
+                INNER JOIN productos p ON m.IdProducto = p.IdProducto
+                INNER JOIN usuarios u ON m.IdUsuario = u.IdUsuario
                 ORDER BY m.Fecha DESC";
 
         $stmt = $this->conn->query($sql);
