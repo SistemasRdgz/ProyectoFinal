@@ -1,7 +1,8 @@
+
 <?php
 session_start();
 
-// Obtenemos la acción (add, sub, remove) y el ID del producto desde la URL
+// Obtenemos la acción (add, sub, remove) y el ID del producto desde la URL  ,
 $action = $_GET['action'] ?? '';
 $id = $_GET['id'] ?? null;
 
