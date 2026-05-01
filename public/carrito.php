@@ -125,7 +125,7 @@ $total = 0;
                             </td>
                             <td class="align-middle">$<?= number_format($subtotal, 2) ?></td>
                             
-                            <!-- NUEVA CELDA DE BOTÓN ELIMINAR -->
+                            <!-- NUEVA CELDA DE BOTÓN ELIMINAR --> ...
                             <td class="align-middle text-center">
                                 <a href="update_cart.php?action=remove&id=<?= $idProducto ?>" class="btn btn-sm btn-danger" title="Eliminar producto">
                                     <i class="bi bi-trash"></i>
@@ -162,4 +162,4 @@ $total = 0;
 </div>
 
 </body>
-</html>
+</html> 
