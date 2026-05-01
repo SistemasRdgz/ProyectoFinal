@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  selector:
+    app: farmacia-db
+  ports:
+    - port: 3306
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: farmacia-db
+spec:
+  replicas: 1 # Solo necesitamos 1 base de datos
+  selector:
+    matchLabels:
+      app: farmacia-db
+  template:
+    metadata:
+      labels:
+        app: farmacia-db
+    spec:
+      containers:
+      - name: mariadb
+        image: mariadb:10.4
+        env:
+        - name: MYSQL_ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        - name: MYSQL_DATABASE
+          value: "farmaciasj"
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: init-script
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: init-script
+        configMap:
+          name: db-init-script

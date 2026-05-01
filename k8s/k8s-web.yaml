@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: farmacia-web-service
+spec:
+  type: LoadBalancer # Esto reparte a los usuarios entre las distintas copias de la app
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: farmacia-web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: farmacia-web
+spec:
+  replicas: 3 # ¡AQUÍ ESTÁ LA ESCALABILIDAD! 3 copias de tu app corriendo a la vez
+  selector:
+    matchLabels:
+      app: farmacia-web
+  template:
+    metadata:
+      labels:
+        app: farmacia-web
+    spec:
+      containers:
+      - name: farmacia-web
+        image: farmacia-web:local
+        imagePullPolicy: Never # Crucial para que use la imagen de tu computadora
+        ports:
+        - containerPort: 80
