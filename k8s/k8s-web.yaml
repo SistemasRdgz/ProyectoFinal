@@ -3,7 +3,8 @@ kind: Service
 metadata:
   name: farmacia-web-service
 spec:
-  type: LoadBalancer # Esto reparte a los usuarios entre las distintas copias de la app
+  type: LoadBalancer 
+  sessionAffinity: ClientIP # <--- ¡ESTA ES LA LÍNEA MÁGICA!
   ports:
     - port: 80
       targetPort: 80
@@ -15,7 +16,7 @@ kind: Deployment
 metadata:
   name: farmacia-web
 spec:
-  replicas: 3 # ¡AQUÍ ESTÁ LA ESCALABILIDAD! 3 copias de tu app corriendo a la vez
+  replicas: 3
   selector:
     matchLabels:
       app: farmacia-web
@@ -27,6 +28,6 @@ spec:
       containers:
       - name: farmacia-web
         image: farmacia-web:local
-        imagePullPolicy: Never # Crucial para que use la imagen de tu computadora
+        imagePullPolicy: Never
         ports:
         - containerPort: 80
