@@ -17,6 +17,8 @@ services:
       MYSQL_DATABASE: farmaciasj
     ports:
       - "3306:3306"
+    volumes:
+      - ./farmaciasj.sql:/docker-entrypoint-initdb.d/farmaciasj.sql
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
