@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-04-2026 a las 04:29:20
+-- Tiempo de generación: 03-05-2026 a las 07:49:44
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Versión de PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -29,7 +29,6 @@ USE `farmaciasj`;
 -- Estructura de tabla para la tabla `categorias`
 --
 
-DROP TABLE IF EXISTS `categorias`;
 CREATE TABLE `categorias` (
   `IdCategoria` int(11) NOT NULL,
   `Nombre` varchar(100) NOT NULL,
@@ -53,7 +52,6 @@ INSERT INTO `categorias` (`IdCategoria`, `Nombre`, `Descripcion`) VALUES
 -- Estructura de tabla para la tabla `compras`
 --
 
-DROP TABLE IF EXISTS `compras`;
 CREATE TABLE `compras` (
   `IdCompra` int(11) NOT NULL,
   `IdProveedor` int(11) DEFAULT NULL,
@@ -66,12 +64,10 @@ CREATE TABLE `compras` (
 --
 
 INSERT INTO `compras` (`IdCompra`, `IdProveedor`, `Fecha`, `Total`) VALUES
-(3, NULL, '2026-04-27 03:05:45', NULL),
-(5, 1, '2026-04-27 03:13:59', 93.50),
-(6, 1, '2026-04-27 11:12:22', 45.00),
-(7, 1, '2026-04-27 19:24:50', 0.00),
-(8, 1, '2026-04-27 19:25:00', 0.00),
-(9, 1, '2026-04-27 19:27:31', 7.50);
+(9, 1, '2026-04-27 19:27:31', 7.50),
+(10, 5, '2026-05-03 02:41:41', 6.45),
+(11, 5, '2026-05-03 02:48:00', 48.10),
+(12, 4, '2026-05-03 02:48:51', 58.50);
 
 -- --------------------------------------------------------
 
@@ -79,7 +75,6 @@ INSERT INTO `compras` (`IdCompra`, `IdProveedor`, `Fecha`, `Total`) VALUES
 -- Estructura de tabla para la tabla `detallecompras`
 --
 
-DROP TABLE IF EXISTS `detallecompras`;
 CREATE TABLE `detallecompras` (
   `IdDetalle` int(11) NOT NULL,
   `IdCompra` int(11) DEFAULT NULL,
@@ -93,11 +88,12 @@ CREATE TABLE `detallecompras` (
 --
 
 INSERT INTO `detallecompras` (`IdDetalle`, `IdCompra`, `IdProducto`, `Cantidad`, `Precio`) VALUES
-(2, 5, 3, 1, 2.00),
-(3, 5, 4, 1, 5.50),
-(6, 6, 3, 1, 2.00),
 (7, 9, 9, 1, 2.00),
-(8, 9, 4, 1, 5.50);
+(9, 10, 29, 2, 1.75),
+(10, 10, 28, 1, 2.95),
+(11, 11, 23, 5, 8.90),
+(12, 11, 20, 2, 1.80),
+(13, 12, 13, 9, 6.50);
 
 -- --------------------------------------------------------
 
@@ -105,7 +101,6 @@ INSERT INTO `detallecompras` (`IdDetalle`, `IdCompra`, `IdProducto`, `Cantidad`,
 -- Estructura de tabla para la tabla `movimientosinventario`
 --
 
-DROP TABLE IF EXISTS `movimientosinventario`;
 CREATE TABLE `movimientosinventario` (
   `IdMovimiento` int(11) NOT NULL,
   `IdProducto` int(11) DEFAULT NULL,
@@ -121,9 +116,13 @@ CREATE TABLE `movimientosinventario` (
 
 INSERT INTO `movimientosinventario` (`IdMovimiento`, `IdProducto`, `IdUsuario`, `TipoMovimiento`, `Cantidad`, `Fecha`) VALUES
 (1, 9, 6, 'SALIDA', 1, '2026-04-27 19:27:31'),
-(2, 4, 6, 'SALIDA', 1, '2026-04-27 19:27:31'),
 (3, 9, 4, 'ENTRADA', 5, '2026-04-27 19:39:13'),
-(4, 4, 4, 'ENTRADA', 10, '2026-04-27 19:39:47');
+(5, 29, 9, 'SALIDA', 2, '2026-05-03 02:41:41'),
+(6, 28, 9, 'SALIDA', 1, '2026-05-03 02:41:41'),
+(7, 10, 9, 'ENTRADA', 5, '2026-05-03 02:42:29'),
+(8, 23, 10, 'SALIDA', 5, '2026-05-03 02:48:00'),
+(9, 20, 10, 'SALIDA', 2, '2026-05-03 02:48:00'),
+(10, 13, 10, 'SALIDA', 9, '2026-05-03 02:48:51');
 
 -- --------------------------------------------------------
 
@@ -131,7 +130,6 @@ INSERT INTO `movimientosinventario` (`IdMovimiento`, `IdProducto`, `IdUsuario`, 
 -- Estructura de tabla para la tabla `productos`
 --
 
-DROP TABLE IF EXISTS `productos`;
 CREATE TABLE `productos` (
   `IdProducto` int(11) NOT NULL,
   `Nombre` varchar(150) NOT NULL,
@@ -149,9 +147,27 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`IdProducto`, `Nombre`, `Descripcion`, `Precio`, `FechaVencimiento`, `StockActual`, `StockMinimo`, `IdCategoria`, `IdProveedor`) VALUES
-(3, 'Ibuprofeno 400mg', NULL, 2.00, '0000-00-00', 80, 5, NULL, NULL),
-(4, 'Amoxicilina 500mg', NULL, 5.50, '0000-00-00', 59, 5, NULL, NULL),
-(9, 'ACETAMINOFEN BAYER', 'PARA DOLOR', 2.00, '2030-12-25', 45, 10, 1, 1);
+(9, 'ACETAMINOFEN BAYER', 'PARA DOLOR', 2.00, '2030-12-25', 45, 10, 1, 1),
+(10, 'Aspirina 100mg', 'Alivio del dolor leve', 1.50, '2027-05-10', 55, 10, 1, 4),
+(11, 'Diclofenaco 50mg', 'Antiinflamatorio', 2.75, '2027-03-15', 40, 10, 1, 5),
+(12, 'Jarabe para la tos', 'Alivio de tos seca', 3.25, '2026-11-20', 30, 5, 1, 6),
+(13, 'Azitromicina 500mg', 'Antibiótico de amplio espectro', 6.50, '2027-01-01', 16, 5, 2, 4),
+(14, 'Ciprofloxacino 500mg', 'Tratamiento infecciones', 5.80, '2027-06-30', 20, 5, 2, 5),
+(15, 'Vitamina C 500mg', 'Refuerza el sistema inmune', 4.00, '2028-02-15', 60, 10, 3, 6),
+(16, 'Multivitaminas', 'Suplemento completo', 7.50, '2028-08-01', 35, 10, 3, 4),
+(17, 'Alcohol 70%', 'Desinfección', 1.25, '2029-01-01', 100, 20, 4, 5),
+(18, 'Gel antibacterial', 'Elimina bacterias', 2.20, '2027-09-10', 80, 15, 4, 6),
+(19, 'Shampoo anticaspa', 'Cuidado capilar', 5.00, '2028-04-22', 45, 10, 4, 4),
+(20, 'Gasas estériles', 'Uso médico', 1.80, '2030-01-01', 68, 15, 5, 5),
+(21, 'Vendas adhesivas', 'Curaciones rápidas', 2.10, '2030-01-01', 65, 15, 5, 6),
+(22, 'Agua oxigenada', 'Desinfectante', 1.40, '2029-06-01', 50, 10, 5, 4),
+(23, 'Termómetro digital', 'Medición de temperatura', 8.90, '2032-01-01', 10, 3, 5, 5),
+(24, 'Omeprazol 20mg', 'Protector gástrico', 3.90, '2027-07-07', 40, 10, 1, 6),
+(25, 'Loratadina', 'Antialérgico', 2.60, '2027-10-10', 55, 10, 1, 4),
+(26, 'Ibuprofeno infantil', 'Para niños', 3.10, '2026-12-30', 30, 5, 1, 5),
+(27, 'Enjuague bucal', 'Higiene oral', 4.50, '2028-03-03', 35, 10, 4, 6),
+(28, 'Crema antibacterial', 'Uso tópico', 2.95, '2027-05-05', 24, 5, 4, 4),
+(29, 'Suero oral', 'Hidratación', 1.75, '2026-09-09', 58, 15, 5, 5);
 
 -- --------------------------------------------------------
 
@@ -159,7 +175,6 @@ INSERT INTO `productos` (`IdProducto`, `Nombre`, `Descripcion`, `Precio`, `Fecha
 -- Estructura de tabla para la tabla `proveedores`
 --
 
-DROP TABLE IF EXISTS `proveedores`;
 CREATE TABLE `proveedores` (
   `IdProveedor` int(11) NOT NULL,
   `Nombre` varchar(100) NOT NULL,
@@ -185,7 +200,6 @@ INSERT INTO `proveedores` (`IdProveedor`, `Nombre`, `Telefono`, `Direccion`) VAL
 -- Estructura de tabla para la tabla `usuarios`
 --
 
-DROP TABLE IF EXISTS `usuarios`;
 CREATE TABLE `usuarios` (
   `IdUsuario` int(11) NOT NULL,
   `Nombre` varchar(100) NOT NULL,
@@ -200,12 +214,13 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`IdUsuario`, `Nombre`, `Correo`, `Pass`, `Rol`, `Estado`) VALUES
-(1, 'Hector', 'hectorvicenzo34@gmail.com', '12399', 'admin', 1),
-(2, 'Adal', 'adalcarcamo@gmail.com', '123456', 'usuario', 1),
-(3, 'cesar', 'cesaredu@gmail.com', '$2y$10$3Awz1HXdFRNrj4jqP8hJMOu.G0Mzn1z7f1KSTPjL4Y4knagjxVjxW', 'usuario', 1),
-(4, 'Camavaro', 'hectorvaquerano30@gmail.com', '$2y$10$KAgCyRPb6JEwkEZa8cOCvOEBxibr/qIpJvfT/18fM1w4jmISV601m', 'admin', 1),
-(5, 'vladimir sebastian', 'vladimir23@gmail.com', '$2y$10$YQhSuhuHAs38/Enxqdr3UOq.QNupRdU9X8AssaRKVsRUd9Wxyp98e', 'usuario', 1),
-(6, 'Isaac', 'isaacarcamo@gmail.com', '$2y$10$HmMcO7clK69bN/sGaijFauCHsAuC4VRbvqbWMZ1hemBZbgScGuThe', 'usuario', 1);
+(3, 'Cesar Hernandez', 'cesaredu@gmail.com', '$2y$10$3Awz1HXdFRNrj4jqP8hJMOu.G0Mzn1z7f1KSTPjL4Y4knagjxVjxW', 'usuario', 1),
+(4, 'Héctor Rodríguez', 'hectorvaquerano30@gmail.com', '$2y$10$KAgCyRPb6JEwkEZa8cOCvOEBxibr/qIpJvfT/18fM1w4jmISV601m', 'admin', 1),
+(5, 'Vladimir Sebastian', 'vladimir23@gmail.com', '$2y$10$YQhSuhuHAs38/Enxqdr3UOq.QNupRdU9X8AssaRKVsRUd9Wxyp98e', 'usuario', 1),
+(6, 'Julissa Delgado', 'julissa@gmail.com', '$2y$10$HmMcO7clK69bN/sGaijFauCHsAuC4VRbvqbWMZ1hemBZbgScGuThe', 'usuario', 1),
+(8, 'Jose Fernandez', 'jose@gmail.com', '$2y$10$BkUofwgaMqHAaT4OHo5X8eEThU1ryF.fBp89SSkMe45j6XvWQ/Ph2', 'usuario', 1),
+(9, 'Juan Bernal', 'bernal@gmail.com', '$2y$10$4bSrFm01FZDZjknxuhfB5OeuVv7V3rTuZLhVwdUvNq0UL01AOwrCm', 'usuario', 1),
+(10, 'Marcos Vaquerano', 'vaquerano@gmail.com', '$2y$10$hMrPTh8V1YKiSDvVjumkd.8B7AayGOGZmRCd0/RmdQ1UvCZQ6Mr.G', 'usuario', 1);
 
 --
 -- Índices para tablas volcadas
@@ -275,25 +290,25 @@ ALTER TABLE `categorias`
 -- AUTO_INCREMENT de la tabla `compras`
 --
 ALTER TABLE `compras`
-  MODIFY `IdCompra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `IdCompra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `detallecompras`
 --
 ALTER TABLE `detallecompras`
-  MODIFY `IdDetalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `IdDetalle` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `movimientosinventario`
 --
 ALTER TABLE `movimientosinventario`
-  MODIFY `IdMovimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `IdMovimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `IdProducto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `IdProducto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedores`
@@ -305,7 +320,7 @@ ALTER TABLE `proveedores`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `IdUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `IdUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Restricciones para tablas volcadas
